@@ -1,0 +1,10 @@
+{
+	"cSpell.words": [
+		"PRICP",
+		"PRIXCP",
+		"PRIXLEAST"
+	],
+	"files.associations": {
+		"*.h": "c"
+	}
+}

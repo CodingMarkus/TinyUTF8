@@ -1,0 +1,186 @@
+#!/bin/sh
+set -e
+
+buildProductsDir=$( pwd )
+projectDir=$( dirname "$0" )
+
+# Make projectDir absolute
+case $projectDir in
+	/*) ;;
+	*) projectDir="$buildDir/$projectDir"
+esac
+
+. "$projectDir/shared.inc"
+
+
+printHelp()
+{
+	help='
+SYNTAX
+------
+
+    ./test [options] ...
+
+OPTIONS
+-------
+
+    -help           Show this help screen.
+    -clean          Make a clean build.
+'
+	printf '%s\n' "$help"
+	exit "$1"
+}
+
+
+clean=
+
+while [ $# -gt 0 ]
+do
+	case $1 in
+		-help) printHelp 0 ;;
+		-clean) clean=true ;;
+		*) syntaxError "Unkown option \"$1\"" ;;
+	esac
+	shift
+done
+
+cfgFile="$projectDir/cfg/test.cfg"
+
+srcDir="$projectDir/tests/code"
+buildDir="$buildProductsDir/tests"
+
+binDir="$buildDir/bin"
+objDir="$buildDir/objects"
+lastBuildCfg="$buildDir/last.cfg"
+
+
+if [ -n "$clean" ] \
+	|| ( [ -f "$lastBuildCfg" ] && ! cmp -s "$lastBuildCfg" "$cfgFile" )
+then
+	rm -r "$buildDir"
+	"$projectDir/build" test -clean
+else
+	"$projectDir/build" test
+fi
+
+[ -d "$buildDir" ] || mkdir -p "$buildDir"
+[ -f "$lastBuildCfg" ] || cp "$cfgFile" "$lastBuildCfg"
+
+
+buildArgs=
+parseCfgFile buildArgs "$cfgFile"
+srcFileList="$buildDir/sources.txt"
+find "$srcDir" -name "*.c" >"$srcFileList"
+
+
+echo
+echo '=== Building Tests ==='
+[ -z "$clean" ] || echo "(clean build)"
+echo
+
+while IFS='' read -r srcFile
+do
+	echo "Next: ${srcFile#"$projectDir/"}"
+	objFile="$objDir/${srcFile#"$srcDir/"}.o"
+	flagsFile=$( findCompileFlags "$srcFile" "$projectDir" )
+
+	flagsFileDir=
+	flagsFileContent=
+	if [ -n "$flagsFile" ]
+	then
+		parseCfgFile flagsFileContent "$flagsFile"
+		flagsFileDir=$( dirname "$flagsFile" )
+	fi
+
+	if ! objectFileIsOutdated \
+		"$objFile" "$srcFile" \
+		"$flagsFileContent" "$flagsFileDir"
+	then
+		echo 'Nothing to do.'
+		echo
+		continue
+	fi
+
+	objFileDir=$( dirname "$objFile" )
+	[ -d "$objFileDir" ] || mkdir -p "$objFileDir"
+
+	buildCmd="clang -c -o $( quote "$objFile" )"
+	buildCmd="$buildCmd $flagsFileContent $buildArgs"
+	buildCmd="$buildCmd $(quote "$srcFile" )"
+
+	if [ -n "$flagsFileDir" ]
+	then
+		buildCmd="( cd $( quote "$flagsFileDir" ) && $buildCmd )"
+	fi
+
+	if ! eval "$buildCmd"
+	then
+		echo "Error: Building failed!" >&2
+		echo "Build command was: $buildCmd" >&2
+		exit 1
+	fi
+
+	echo "Created ${objFile#"$buildProductsDir/"}"
+	echo
+
+done <"$srcFileList"
+
+
+echo
+echo '=== Linking Tests ==='
+echo
+
+libFile="$buildProductsDir/$LIBNAME"
+[ -d "$binDir" ] || mkdir -p "$binDir"
+
+for testDir in "$objDir"/*
+do
+	binName=$( basename "$testDir" )
+	binFile="$binDir/$binName"
+
+	echo "Next: $binName"
+
+	if [ -f "$binFile" ] \
+		&& ! anyFileIsNewerThan "$binFile" "$libFile" "$testDir"
+	then
+		echo 'Nothing to do.'
+		echo
+		continue
+	fi
+
+	objFileList="$buildDir/objects.txt"
+	find "$testDir" -name "*.o" >"$objFileList"
+
+	linkCmd="clang -o $( quote "$binFile" )"
+
+	if shouldLinkAddressSanitizer "$buildArgs"
+	then
+		linkCmd="$linkCmd -fsanitize=address"
+	fi
+
+	linkCmd="$linkCmd $( quote "$libFile" )"
+
+	while IFS='' read -r objFile
+	do
+		linkCmd="$linkCmd $( quote "$objFile" )"
+	done <"$objFileList"
+
+	eval "$linkCmd"
+
+	echo "Created ${binFile#"$buildProductsDir/"}"
+	echo
+done
+
+
+echo
+echo '=== Running Tests ==='
+echo
+
+for test in "$binDir"/*
+do
+	[ -x "$test" ] || continue
+
+	echo "Next: $( basename "$test" )"
+	"$test" && echo "Test succeeded."
+	echo
+done

@@ -1,0 +1,182 @@
+#!/bin/sh
+set -e
+
+buildProductsDir=$( pwd )
+projectDir=$( dirname "$0" )
+
+# Make projectDir absolute
+case $projectDir in
+	/*) ;;
+	*) projectDir="$buildDir/$projectDir"
+esac
+
+. "$projectDir/shared.inc"
+
+
+printHelp()
+{
+	help='
+SYNTAX
+------
+
+    ./build <build_style> [options] ...
+
+OPTIONS
+-------
+
+    -help           Show this help screen.
+    -clean          Make a clean build.
+    -listSytles     List available build styples.
+'
+	printf '%s\n' "$help"
+	exit "$1"
+}
+
+
+clean=
+buildStyle=
+
+while [ $# -gt 0 ]
+do
+	case $1 in
+		-listStyles)
+			echo
+			echo "Available Build Styles:"
+			echo
+			for style in "$projectDir/cfg"/*.cfg
+			do
+				if [ -f "$style" ]
+				then
+					stylename=$( basename "$style" )
+					stylename=${stylename%.cfg}
+					printf '%s\n' "$stylename"
+				fi
+			done
+			exit 0
+		 ;;
+
+
+		-help) printHelp 0 ;;
+		-clean) clean=true ;;
+		-*) syntaxError "Unkown option \"$1\"" ;;
+
+		*)
+			if [ -f "$projectDir/cfg/$1.cfg" ]
+			then
+				[ -z "$buildStyle" ] \
+					||  syntaxError "Multiple build styles are not allowed"
+				buildStyle=$1
+			else
+				syntaxError "Unkonwn build style \"$1\""
+			fi
+		;;
+	esac
+	shift
+done
+
+
+buildStyle=${buildStyle:-"release"}
+cfgFile="$projectDir/cfg/$buildStyle.cfg"
+
+srcDir="$projectDir/src/code"
+buildDir="$buildProductsDir/build"
+
+objDir="$buildDir/objects"
+lastBuildCfg="$buildDir/last.cfg"
+
+
+if [ -n "$clean" ] \
+	|| ( [ -f "$lastBuildCfg" ] && ! cmp -s "$lastBuildCfg" "$cfgFile" )
+then
+	rm -r "$buildDir"
+fi
+
+[ -d "$buildDir" ] || mkdir -p "$buildDir"
+[ -f "$lastBuildCfg" ] || cp "$cfgFile" "$lastBuildCfg"
+
+
+buildArgs=
+parseCfgFile buildArgs "$cfgFile"
+srcFileList="$buildDir/sources.txt"
+find "$srcDir" -name "*.c" >"$srcFileList"
+
+
+echo
+echo '=== Building ==='
+[ -z "$clean" ] || echo "(clean build)"
+echo
+
+while IFS='' read -r srcFile
+do
+	echo "Next: ${srcFile#"$projectDir/"}"
+	objFile="$objDir/${srcFile#"$srcDir/"}.o"
+	flagsFile=$( findCompileFlags "$srcFile" "$projectDir" )
+
+	flagsFileDir=
+	flagsFileContent=
+	if [ -n "$flagsFile" ]
+	then
+		parseCfgFile flagsFileContent "$flagsFile"
+		flagsFileDir=$( dirname "$flagsFile" )
+	fi
+
+	if ! objectFileIsOutdated \
+		"$objFile" "$srcFile" \
+		"$flagsFileContent" "$flagsFileDir"
+	then
+		echo 'Nothing to do.'
+		echo
+		continue
+	fi
+
+	objFileDir=$( dirname "$objFile" )
+	[ -d "$objFileDir" ] || mkdir -p "$objFileDir"
+
+	buildCmd="clang -c -o $( quote "$objFile" )"
+	buildCmd="$buildCmd $flagsFileContent $buildArgs"
+	buildCmd="$buildCmd $(quote "$srcFile" )"
+
+	if [ -n "$flagsFileDir" ]
+	then
+		buildCmd="( cd $( quote "$flagsFileDir" ) && $buildCmd )"
+	fi
+
+	if ! eval "$buildCmd"
+	then
+		echo "Error: Building failed!" >&2
+		echo "Build command was: $buildCmd" >&2
+		exit 1
+	fi
+
+	echo "Created ${objFile#"$buildProductsDir/"}"
+	echo
+
+done <"$srcFileList"
+
+
+echo
+echo '=== Linking ==='
+echo
+
+libFile="$buildProductsDir/$LIBNAME"
+
+if [ ! -f "$libFile" ] \
+	|| anyFileIsNewerThan "$libFile" "$objDir"
+then
+	objFileList="$buildDir/objects.txt"
+	find "$objDir" -name "*.o" >"$objFileList"
+
+	arCmd="ar -q -s -c $( quote "$libFile" )"
+
+	while IFS='' read -r objFile
+	do
+		arCmd="$arCmd $( quote "$objFile" )"
+	done <"$objFileList"
+
+	[ -f "$libFile" ] && rm "$libFile"
+	eval "$arCmd"
+	echo "Created $LIBNAME"
+else
+	echo "Nothin to do."
+fi
+echo
