@@ -17,7 +17,7 @@ typedef uint_least32_t  CodePoint_TinyUTF8;
 
 
 /**
-	Used for printing code points in printf().
+	Used for printing code points in `printf()`.
 */
 #define PRIuCP_TinyUTF8  PRIuLEAST32
 #define PRIXCP_TinyUTF8  PRIXLEAST32

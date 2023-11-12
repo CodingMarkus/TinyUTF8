@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TinyUTF8/header_begin.h"
+#include "header_begin.h"
 
 #undef Begin
 #undef End
