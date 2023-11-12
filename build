@@ -24,9 +24,9 @@ SYNTAX
 OPTIONS
 -------
 
-    -help           Show this help screen.
-    -clean          Make a clean build.
-    -listSytles     List available build styples.
+    -help          Show this help screen.
+    -clean         Make a clean build.
+    -listSytles    List available build styples.
 '
 	printf '%s\n' "$help"
 	exit "$1"

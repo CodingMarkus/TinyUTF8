@@ -28,10 +28,17 @@ error()
 
 findCompileFlags()
 {
-	_srcFile=$1
+	_src=$1
 	_stopDir=$2
 
-	_flagsdir=$( dirname "$_srcFile" )
+	_flagsdir=
+	if [ -d "$_src" ]
+	then
+		_flagsdir=$_src
+	else
+		_flagsdir=$( dirname "$_src" )
+	fi
+
 	while :
 	do
 		if [ -f "$_flagsdir/compile_flags.txt" ]
@@ -71,6 +78,24 @@ anyFileIsNewerThan()
 }
 
 
+depListForSourceFile()
+(
+	srcFile=$1
+	flagsFileContent=$2
+	flagsFileDir=$3
+
+	[ -n "$flagsFileDir" ] && cd "$flagsFileDir"
+
+	if ! depList=$( eval "clang -MM $flagsFileContent \"$srcFile\"" )
+	then
+		exit 1
+	fi
+
+	printf '%s' "$depList" | xargs -n1 | grep -v -e '^$' -e '\.o:$' \
+		| sed 's/\(.*\)/"\1" /' | tr -d '\n'
+)
+
+
 objectFileIsOutdated()
 {
 	_objectFile=$1
@@ -83,17 +108,8 @@ objectFileIsOutdated()
 
 	(
 		[ -n "$_flagsFileDir" ] && cd "$_flagsFileDir"
-
-		if ! depList=$( eval "clang -MM $_flagsFileContent \"$_srcFile\"" )
-		then
-			exit 1
-		fi
-
-		depList=$(
-			printf '%s' "$depList" | xargs -n1 | grep -v '^$' \
-			| grep -v '\.o:$' | sed 's/\(.*\)/"\1" /' | tr -d '\n'
-		)
-		eval "anyFileIsNewerThan \"$1\" $depList"
+		_depList=$( depListForSourceFile "$_srcFile" "$_flagsFileContent" )
+		eval "anyFileIsNewerThan \"$1\" $_depList"
 	)
 }
 
@@ -121,4 +137,21 @@ shouldLinkAddressSanitizer()
 		*'-fsanitize=address'*) return 0
 	esac
 	return 1
+}
+
+
+extractInclude()
+{
+	_line=$1
+
+	printf '%s' "$_line" \
+		| sed 's/[[:space:]]*#include[[:space:]]*"\([^"]*\)"/\1/'
+}
+
+
+isPragmaOnce()
+{
+	_header=$1
+
+	grep -q -F '#pragma once' "$_header"
 }

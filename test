@@ -24,8 +24,8 @@ SYNTAX
 OPTIONS
 -------
 
-    -help           Show this help screen.
-    -clean          Make a clean build.
+    -help     Show this help screen.
+    -clean    Make a clean build.
 '
 	printf '%s\n' "$help"
 	exit "$1"

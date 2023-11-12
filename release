@@ -1,0 +1,138 @@
+#!/bin/sh
+set -e
+
+buildProductsDir=$( pwd )
+projectDir=$( dirname "$0" )
+
+# Make projectDir absolute
+case $projectDir in
+	/*) ;;
+	*) projectDir="$buildDir/$projectDir"
+esac
+
+. "$projectDir/shared.inc"
+
+
+printHelp()
+{
+	help='
+SYNTAX
+------
+
+    ./release [options] ...
+
+OPTIONS
+-------
+
+    -help    Show this help screen.
+'
+	printf '%s\n' "$help"
+	exit "$1"
+}
+
+
+while [ $# -gt 0 ]
+do
+	case $1 in
+		-help) printHelp 0 ;;
+		-*) syntaxError "Unkown option \"$1\"" ;;
+		*) syntaxError "Unkown command \"$1\"" ;;
+	esac
+	#shift
+done
+
+srcDir="$projectDir/src/release"
+buildDir="$buildProductsDir/relase"
+
+[ -d "$buildDir" ] && rm -r "$buildDir"
+mkdir -p "$buildDir"
+
+
+flagsFile=$( findCompileFlags "$srcDir" "$projectDir" )
+
+flagsFileDir=
+flagsFileContent=
+if [ -n "$flagsFile" ]
+then
+	parseCfgFile flagsFileContent "$flagsFile"
+	flagsFileDir=$( dirname "$flagsFile" )
+fi
+
+
+echo
+echo '=== Creating Release Files ==='
+echo
+
+for inputFile in "$srcDir"/*
+do
+	echo "Next: ${inputFile#"$srcDir/"}"
+	outputFileTemp="$buildDir/${inputFile#"$srcDir/"}"
+	outputFile="${outputFileTemp%.h}"
+	cp "$inputFile" "$outputFile"
+
+	pragmaOnceList=
+	depList=$( depListForSourceFile \
+		"$inputFile" "$flagsFileContent" "$flagsFileDir" )
+
+	while :
+	do
+		performedInclude=
+		mv "$outputFile" "$outputFileTemp"
+
+		while IFS= read -r line
+		do
+			include=
+			case $line in
+				*'#pragma'*'once'*) continue ;;
+				*'#include'*'"'*) include=$( extractInclude "$line" )
+			esac
+
+			if [ -z "$include" ]
+			then
+				printf '%s\n' "$line" >>"$outputFile"
+				continue
+			fi
+
+			case $pragmaOnceList in
+				*"$include"*) continue
+			esac
+
+			includeFile=
+			for dep in $( eval "printf '%s\n' $depList" )
+			do
+				case $dep in
+					*"$include") includeFile=$dep; break
+				esac
+			done
+
+			[ -z "$includeFile" ] \
+				&& error "Include file not found: \"$include\""
+
+			case $includeFile in
+				/*) ;;
+				*) includeFile="$flagsFileDir/$includeFile"
+			esac
+
+			cat "$includeFile" >>"$outputFile"
+
+			isPragmaOnce "$includeFile" \
+				&& pragmaOnceList="$pragmaOnceList $include"
+
+			performedInclude=true
+
+		done <"$outputFileTemp"
+
+		rm "$outputFileTemp"
+		[ -z "$performedInclude" ] && break
+	done
+
+	case $outputFile in
+		*.h)
+			mv "$outputFile" "$outputFileTemp"
+			printf '#pragma once\n\n' >"$outputFile"
+			cat "$outputFileTemp" >>"$outputFile"
+			rm "$outputFileTemp"
+	esac
+
+	echo
+done
