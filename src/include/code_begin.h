@@ -5,20 +5,35 @@
 #undef Begin
 #undef End
 
-#if __clang__
+/**
+	Sets some compiler flags at the beginning of code.
+*/
+#define Begin  BeginCode_TinyUTF8
 
-	#define Begin  _Pragma("clang assume_nonnull begin")
-	#define End    _Pragma("clang assume_nonnull end")
+/**
+	Resets some compiler flags at the end of code.
+*/
+#define End    EndCode_TinyUTF8
 
-#else
 
-	#define Begin
-	#define End
+/**
+	Mark a symbol as public.
+*/
+#define public public_TinyUTF8
 
-#endif
+/**
+	Mark a symbol as internal.
+*/
+#define internal internal_TinyUTF8
+
+
 
 #define initError() \
 	if (outError) *outError = No_Error_TinyUTF8
 
 #define throw(error) \
 	if (outError) *outError = error ## _Error_TinyUTF8
+
+
+
+#include "internal/code_begin.h"

@@ -11,10 +11,10 @@
 */
 #define Begin  BeginHeader_TinyUTF8
 
-
 /**
 	Resets some compiler flags at the end of a header.
 */
 #define End  EndHeader_TinyUTF8
+
 
 #include "internal/header_begin.h"
