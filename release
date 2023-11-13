@@ -41,6 +41,8 @@ do
 	#shift
 done
 
+cfgFile="$projectDir/cfg/release.cfg"
+
 srcDir="$projectDir/src/release"
 buildDir="$buildProductsDir/release"
 
@@ -57,6 +59,9 @@ then
 	parseCfgFile flagsFileContent "$flagsFile"
 	flagsFileDir=$( dirname "$flagsFile" )
 fi
+
+buildArgs=
+parseCfgFile buildArgs "$cfgFile"
 
 
 echo
@@ -135,6 +140,30 @@ do
 	esac
 
 	echo "Created ${outputFile#"$buildProductsDir/"}"
+	echo
+done
+
+
+echo
+echo '=== Testing ==='
+echo
+
+for file in "$buildDir"/*
+do
+	echo "Next: ${file#"$buildDir/"}"
+
+	buildCmd="clang -x c -c -o /dev/null"
+	buildCmd="$buildCmd $buildArgs -Wno-pragma-once-outside-header"
+	buildCmd="$buildCmd $( quote "$file" )"
+
+	if ! eval "$buildCmd"
+	then
+		echo "Error: Building failed!" >&2
+		echo "Build command was: $buildCmd" >&2
+		exit 1
+	fi
+
+	echo 'Sucess.'
 	echo
 done
 
