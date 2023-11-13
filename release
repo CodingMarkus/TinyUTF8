@@ -137,3 +137,48 @@ do
 	echo "Created ${outputFile#"$buildProductsDir/"}"
 	echo
 done
+
+
+echo
+echo '=== Wrapping Up ==='
+echo
+
+echo "Copying license."
+cp "$projectDir/LICENSE" "$buildDir/"
+echo "Created ${buildDir#"$buildProductsDir/"}/LICENSE"
+echo
+
+
+echo "Compressing results."
+
+filesToCompres=
+for file in "$buildDir"/*
+do
+	file=${file#"$buildDir/"}
+	filesToCompres="$filesToCompres $( quote "$file" )"
+done
+
+arcName='TinyUTF8'
+
+if [ -n "$( command -v zip )" ]
+then
+	cmpCmd="cd '$buildDir'"
+	cmpCmd="$cmpCmd && zip -9 '$arcName.zip' $filesToCompres"
+	eval "$cmpCmd"  >/dev/null
+	echo "Created $arcName.zip"
+else
+	echo "Skipping ZIP..."
+fi
+
+
+if [ -n "$( command -v bzip2 )" ] && [ -n "$( command -v tar )" ]
+then
+	cmpCmd="cd '$buildDir'"
+	cmpCmd="$cmpCmd && tar -c $filesToCompres | bzip2 -9 >'$arcName.tar.bz2'"
+	eval "$cmpCmd"  >/dev/null
+	echo "Created $arcName.tar.bz2"
+else
+	echo "Skipping BZIP2..."
+fi
+
+echo
