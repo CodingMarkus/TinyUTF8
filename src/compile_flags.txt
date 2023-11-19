@@ -10,5 +10,3 @@ include
 -Wimplicit-int-conversion
 -Wimplicit-int-float-conversion
 -Wnullable-to-nonnull-conversion
-
--fvisibility=hidden
