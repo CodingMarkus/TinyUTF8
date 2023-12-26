@@ -159,6 +159,18 @@ void test_unsafeEncodingDecoding( )
 		CodePoint_TinyUTF8 decoded = CodePoint_None_TinyUTF8;
 		size_t read = unsafeDecodeCodePoint_TinyUTF8(buffer, &decoded);;
 		testAssertMsg(read == written, "%zu != %zu", read, written);
+
+		char buffer2[4] = { 0 };
+		Error_TinyUTF8 error = No_Error_TinyUTF8;
+
+		size_t written2 = encodeCodePoint_TinyUTF8(cp, buffer2, 4, &error);
+		testAssert(written == written2);
+		testAssert(0 == memcmp(buffer, buffer2, written));
+
+		CodePoint_TinyUTF8 decoded2 = CodePoint_None_TinyUTF8;
+		size_t read2 = decodeCodePoint_TinyUTF8(buffer, 4, &decoded2, &error);
+		testAssert(read == read2);
+		testAssert(decoded == decoded2);
 	}
 }
 
