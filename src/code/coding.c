@@ -93,11 +93,11 @@ size_t unsafeEncodeCodePoint_TinyUTF8( CodePoint_TinyUTF8 cp, void * dst )
 
 public
 size_t decodeCodePoint_TinyUTF8(
-	void * src, size_t maxIn, CodePoint_TinyUTF8 * outCP,
+	const void * src, size_t maxIn, CodePoint_TinyUTF8 * outCP,
 	Error_TinyUTF8 * optional outError )
 {
 	initError();
-	uint8_t * ptr = src;
+	const uint8_t * ptr = src;
 	*outCP = CodePoint_None_TinyUTF8;
 
 	if (maxIn < 1) {
@@ -196,10 +196,10 @@ size_t decodeCodePoint_TinyUTF8(
 
 public
 size_t unsafeDecodeCodePoint_TinyUTF8(
-	void * src, CodePoint_TinyUTF8 * outCP )
+	const void * src, CodePoint_TinyUTF8 * outCP )
 {
-	uint8_t * ptr = src;
-	uint8_t firstByte = *ptr;
+	const uint8_t * ptr = src;
+	const uint8_t firstByte = *ptr;
 
 	if ((firstByte & 0x80) == 0) {
 		*outCP = firstByte;

@@ -2,6 +2,8 @@
 
 #include "coding.h"
 
+#include <string.h>
+
 #include "code_begin.h"
 Begin
 // ============================================================================
@@ -13,13 +15,17 @@ void test_encodingDecoding( )
 		char buffer[4] = { 0 };
 		Error_TinyUTF8 error = No_Error_TinyUTF8;
 
-		size_t written = encodeCodePoint_TinyUTF8(cp, buffer, 4, &error);
+		const size_t written = encodeCodePoint_TinyUTF8(
+			cp, buffer, 4, &error
+		);
 		testAssertMsg(written > 0 && !error,
 			"Error: %d", error
 		);
 
 		CodePoint_TinyUTF8 decoded = CodePoint_None_TinyUTF8;
-		size_t read = decodeCodePoint_TinyUTF8(buffer, 4, &decoded, &error);
+		const size_t read = decodeCodePoint_TinyUTF8(
+			buffer, 4, &decoded, &error
+		);
 		testAssertMsg(read > 0 && !error,
 			"Error: %s", nameOfError_TinyUTF8(error)
 		);
@@ -65,11 +71,12 @@ void test_destTooSmall( )
 		char buffer[4] = { 0 };
 		Error_TinyUTF8 error = No_Error_TinyUTF8;
 
-		size_t written = encodeCodePoint_TinyUTF8(
+		const size_t written = encodeCodePoint_TinyUTF8(
 			cps[i], buffer, i, &error
 		);
 		testAssertMsg(written == 0 && error == DestTooSmall_Error_TinyUTF8,
-			"Written: %zu, Error: %s", written, nameOfError_TinyUTF8(error)
+			"%zu: Written: %zu, Error: %s",
+			i, written, nameOfError_TinyUTF8(error)
 		);
 	}
 }
@@ -87,7 +94,7 @@ void test_srcTooSmall( )
 		char buffer[4] = { 0 };
 		Error_TinyUTF8 error = No_Error_TinyUTF8;
 
-		size_t written = encodeCodePoint_TinyUTF8(
+		const size_t written = encodeCodePoint_TinyUTF8(
 			cps[i], buffer, i + 1, &error
 		);
 		testAssertMsg(written > 0 && !error,
@@ -95,7 +102,7 @@ void test_srcTooSmall( )
 		);
 
 		CodePoint_TinyUTF8 decoded = CodePoint_None_TinyUTF8;
-		size_t read = decodeCodePoint_TinyUTF8(
+		const size_t read = decodeCodePoint_TinyUTF8(
 			buffer, i, &decoded, &error);
 		testAssertMsg(read == 0 && error == SrcTooSmall_Error_TinyUTF8,
 			"Written: %zu, Error: %s", written, nameOfError_TinyUTF8(error)
