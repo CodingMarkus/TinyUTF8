@@ -114,7 +114,38 @@ void test_srcTooSmall( )
 static
 void test_invalidCoding( )
 {
-
+	const char * badStrings[ ] = {
+		"\xA4",
+		"\xC3\xC3",
+		"\xE2\x82\xC3",
+		"\xE2\x82\xE2",
+		"\xE2\xC3\xAC",
+		"\xE2\xE2\xAC",
+		"\xF0\x9D\x84\xC3",
+		"\xF0\x9D\x84\xE2",
+		"\xF0\x9D\x84\xF0",
+		"\xF0\x9D\xC3\x9E",
+		"\xF0\x9D\xE2\x9E",
+		"\xF0\x9D\xF0\x9E",
+		"\xF0\xC3\x84\x9E",
+		"\xF0\xE2\x84\x9E",
+		"\xF0\xF0\x84\x9E",
+		NULL
+	};
+	size_t i = 0;
+	while (badStrings[i]) {
+		const char * str = badStrings[i++];
+		const size_t count = strlen(str);
+		Error_TinyUTF8 error = No_Error_TinyUTF8;
+		CodePoint_TinyUTF8 decoded = CodePoint_None_TinyUTF8;
+		const size_t read = decodeCodePoint_TinyUTF8(
+			str, count, &decoded, &error
+		);
+		testAssertMsg(read == 0, "%zu: Read: %zu", i - 1, read);
+		testAssertMsg(error == InvalidCoding_Error_TinyUTF8,
+			"%zu: Error: %s", i - 1, nameOfError_TinyUTF8(error)
+		);
+	}
 }
 
 
