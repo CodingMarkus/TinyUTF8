@@ -7,7 +7,7 @@ projectDir=$( dirname "$0" )
 # Make projectDir absolute
 case $projectDir in
 	/*) ;;
-	*) projectDir="$buildDir/$projectDir"
+	*) projectDir="$buildProductsDir/$projectDir"
 esac
 
 . "$projectDir/shared.inc"
@@ -24,29 +24,56 @@ SYNTAX
 OPTIONS
 -------
 
-    -help     Show this help screen.
-    -clean    Make a clean build.
+    -help    Show this help screen.
+	-list    List available test and exit.
+    -clean   Make a clean build.
+	-norun   Build but do not run tests.
+    -debug   Build the tests with debug configuration.
 '
 	printf '%s\n' "$help"
 	exit "$1"
 }
 
-
+list=
 clean=
+debug=
+norun=
+
 
 while [ $# -gt 0 ]
 do
 	case $1 in
 		-help) printHelp 0 ;;
+		-list) list=true ;;
 		-clean) clean=true ;;
+		-norun) norun=true ;;
+		-debug) debug=true ;;
 		*) syntaxError "Unkown option \"$1\"" ;;
 	esac
 	shift
 done
 
-cfgFile="$projectDir/cfg/test.cfg"
 
 srcDir="$projectDir/tests/code"
+
+if [ -n "$list" ]
+then
+	cd "$srcDir"
+	find . -type d -depth 1 | sed 's#^./##'
+	exit 0
+fi
+
+
+buildStyle='test'
+cfgFile="$projectDir/cfg/test.cfg"
+
+if [ -n "$debug" ]
+then
+	buildStyle='debugtest'
+	cfgFile="$projectDir/cfg/debugtest.cfg"
+fi
+
+
 buildDir="$buildProductsDir/tests"
 
 binDir="$buildDir/bin"
@@ -58,9 +85,9 @@ if [ -n "$clean" ] \
 	|| ( [ -f "$lastBuildCfg" ] && ! cmp -s "$lastBuildCfg" "$cfgFile" )
 then
 	rm -r "$buildDir"
-	"$projectDir/build" test -clean
+	"$projectDir/build" "$buildStyle" -clean
 else
-	"$projectDir/build" test
+	"$projectDir/build" "$buildStyle"
 fi
 
 [ -d "$buildDir" ] || mkdir -p "$buildDir"
@@ -71,7 +98,6 @@ buildArgs=
 parseCfgFile buildArgs "$cfgFile"
 srcFileList="$buildDir/sources.txt"
 find "$srcDir" -name "*.c" >"$srcFileList"
-
 
 echo
 echo '=== Building Tests ==='
@@ -171,6 +197,7 @@ do
 	echo
 done
 
+[ -n "$norun" ] && exit 0
 
 echo
 echo '=== Running Tests ==='

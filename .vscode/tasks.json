@@ -1,0 +1,53 @@
+{
+	// See https://go.microsoft.com/fwlink/?LinkId=733558
+	// for the documentation about the tasks.json format
+	"version": "2.0.0",
+	"tasks": [
+		// Cleaning
+		{
+			"label": "clean",
+			"command": [
+				"rm -rf .build"
+			],
+			"type": "shell",
+			"problemMatcher": [ ]
+		},
+
+		// Testing
+		{
+			"label": "test",
+			"command": [
+				"mkdir -p .build/test",
+				"&& cd .build/test",
+				"&& '${workspaceFolder}/test'"
+			],
+			"type": "shell",
+			"problemMatcher": [ ]
+		},
+
+		// Debugging
+		{
+			"label": "build test for debugging",
+			"command": [
+				"mkdir -p .build/debugtest",
+				"&& cd .build/debugtest",
+				"&& ${workspaceFolder}/test -norun -debug",
+				"&& rm -f test",
+				"&& ln -s 'tests/bin/${input:testName}' test"
+			],
+			"type": "shell",
+			"problemMatcher": [ ]
+		}
+	],
+
+	"inputs": [
+		{
+			"id": "testName",
+			"type": "command",
+			"command": "shellCommand.execute",
+			"args": {
+				"command": "./test -list"
+			}
+		}
+	]
+}
