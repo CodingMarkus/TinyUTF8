@@ -12,6 +12,12 @@ static
 void test_encodingDecoding( )
 {
 	for (CodePoint_TinyUTF8 cp = 0; cp <= 0x10FFFF; cp++) {
+		// Skip surrogates
+		if (cp == 0xD800) { cp = 0xDFFF; continue; }
+		// Skip non-characters
+		if (cp == 0xFDD0) { cp = 0xFDEF; continue; }
+		if ((cp & 0xFFFF) == 0xFFFE) { cp++; continue; }
+
 		char buffer[4] = { 0 };
 		Error_TinyUTF8 error = No_Error_TinyUTF8;
 
@@ -166,9 +172,55 @@ void test_invalidCoding( )
 
 
 static
+void test_invalidCoddedCP( )
+{
+	const char * badStrings[ ] = {
+		// Surrogates
+		"\xED\xA0\x80", // 0
+		"\xED\xAD\xBF",
+		"\xED\xAE\x80",
+		"\xED\xAF\xBF",
+		"\xED\xB0\x80",
+		"\xED\xBE\x80", // 5
+		"\xED\xBF\xBF",
+
+		// Non-characters
+		"\xEF\xB7\x90", // 7
+		"\xEF\xB7\xAF",
+		"\xEF\xBF\xBE",
+		"\xEF\xBF\xBF", // 10
+		"\xF4\x8F\xBF\xBE",
+		"\xF4\x8F\xBF\xBF",
+
+		NULL
+	};
+	size_t i = 0;
+	while (badStrings[i]) {
+		const char * str = badStrings[i++];
+		const size_t count = strlen(str);
+		Error_TinyUTF8 error = No_Error_TinyUTF8;
+		CodePoint_TinyUTF8 decoded = CodePoint_None_TinyUTF8;
+		const size_t read = decodeCodePoint_TinyUTF8(
+			str, count, &decoded, &error
+		);
+		testAssertMsg(read == 0, "%zu: Read: %zu", i - 1, read);
+		testAssertMsg(error == InvalidCodedCP_Error_TinyUTF8,
+			"%zu: Error: %s", i - 1, nameOfError_TinyUTF8(error)
+		);
+	}
+}
+
+
+static
 void test_unsafeEncodingDecoding( )
 {
 	for (CodePoint_TinyUTF8 cp = 0; cp <= 0x10FFFF; cp++) {
+		// Skip surrogates
+		if (cp == 0xD800) { cp = 0xDFFF; continue; }
+		// Skip non-characters
+		if (cp == 0xFDD0) { cp = 0xFDEF; continue; }
+		if ((cp & 0xFFFF) == 0xFFFE) { cp++; continue; }
+
 		char buffer[4] = { 0 };
 		size_t written = unsafeEncodeCodePoint_TinyUTF8(cp, buffer);
 
@@ -198,6 +250,7 @@ int main( )
 	test_destTooSmall();
 	test_srcTooSmall();
 	test_invalidCoding();
+	test_invalidCoddedCP();
 	test_unsafeEncodingDecoding();
 	return 0;
 }

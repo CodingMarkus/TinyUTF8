@@ -10,6 +10,7 @@ const char * nameOfError_TinyUTF8( enum Error_TinyUTF8 error )
 		case DestTooSmall_Error_TinyUTF8: return "DestinationTooSmall";
 		case CPOutOfRange_Error_TinyUTF8: return "CodePointOutOfValidRange";
 		case InvalidCoding_Error_TinyUTF8: return "InvalidCoding";
+		case InvalidCodedCP_Error_TinyUTF8: return "InvalidCodedCP";
 	}
 	return "<Unknown>";
 }

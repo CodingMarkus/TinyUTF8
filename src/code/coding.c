@@ -163,6 +163,14 @@ size_t decodeCodePoint_TinyUTF8(
 			throw(InvalidCoding);
 			return 0;
 		}
+		if ((cp >= 0xD800 && cp <= 0xDFFF)
+			|| (cp >= 0xFDD0 && cp <= 0xFDEF)
+			|| (cp >= 0xFFFE))
+		{
+			throw(InvalidCodedCP);
+			return 0;
+		}
+
 		*outCP = cp;
 		return 3;
 	}
@@ -170,6 +178,11 @@ size_t decodeCodePoint_TinyUTF8(
 	if ((firstByte & 0xF8) == 0xF0) {
 		if (maxIn < 4) {
 			throw(SrcTooSmall);
+			return 0;
+		}
+
+		if ((firstByte & 0x07) >= 5) {
+			throw(InvalidCoding);
 			return 0;
 		}
 
@@ -201,6 +214,11 @@ size_t decodeCodePoint_TinyUTF8(
 			throw(InvalidCoding);
 			return 0;
 		}
+		if ((cp & 0xFFFE) == 0xFFFE) {
+			throw(InvalidCodedCP);
+			return 0;
+		}
+
 		*outCP = cp;
 		return 4;
 	}

@@ -27,8 +27,13 @@ enum Error_TinyUTF8 {
 	/**
 		Invalid UTF-8 byte stream.
 	*/
-	InvalidCoding_Error_TinyUTF8
+	InvalidCoding_Error_TinyUTF8,
 
+	/**
+		UTF-8 byte stream encodes a code point that is not allowed to be
+		encoded in UTF-8, e.g. surrogates..
+	*/
+	InvalidCodedCP_Error_TinyUTF8,
 };
 
 
