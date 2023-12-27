@@ -104,7 +104,7 @@ size_t decodeCodePoint_TinyUTF8(
 		throw(SrcTooSmall);
 		return 0;
 	}
-	uint8_t firstByte = *ptr;
+	const uint8_t firstByte = *ptr;
 
 	if ((firstByte & 0x80) == 0) {
 		*outCP = firstByte;
@@ -126,7 +126,13 @@ size_t decodeCodePoint_TinyUTF8(
 			return 0;
 		}
 
-		*outCP = cp | (nextByte & 0x3F);
+		cp |= (nextByte & 0x3F);
+		if (cp <= 0x7F) {
+			throw(InvalidCoding);
+			return 0;
+		}
+
+		*outCP = cp;
 		return 2;
 	}
 
@@ -152,7 +158,12 @@ size_t decodeCodePoint_TinyUTF8(
 			return 0;
 		}
 
-		*outCP = cp | (nextByte & 0x3F);
+		cp |= (nextByte & 0x3F);
+		if (cp <= 0x7FF) {
+			throw(InvalidCoding);
+			return 0;
+		}
+		*outCP = cp;
 		return 3;
 	}
 
@@ -185,7 +196,12 @@ size_t decodeCodePoint_TinyUTF8(
 			return 0;
 		}
 
-		*outCP = cp | (nextByte & 0x3F);
+		cp |= (nextByte & 0x3F);
+		if (cp <= 0xFFFF) {
+			throw(InvalidCoding);
+			return 0;
+		}
+		*outCP = cp;
 		return 4;
 	}
 
