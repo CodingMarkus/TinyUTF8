@@ -27,6 +27,15 @@ size_t encodeCodePoint_TinyUTF8(
 	CodePoint_TinyUTF8 cp, void * dst, size_t maxOut,
 	Error_TinyUTF8 * optional outError )
 {
+	if (!isValidCodePoint(cp)) {
+		if (cp > 0x10FFFF) {
+			throw(CPOutOfRange);
+		} else {
+			throw(InvalidCP);
+		}
+		return 0;
+	}
+
 	initError();
 	uint8_t * ptr = dst;
 

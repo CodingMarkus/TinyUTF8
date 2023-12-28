@@ -59,6 +59,31 @@ void test_encodingDecoding( )
 
 
 static
+void test_invalidCP( )
+{
+	CodePoint_TinyUTF8 cps[ ] = {
+		0xD800, 0xDFFF,
+		0xFDD0, 0xFDEF,
+		0xFFFE, 0xFFFF, 0x1FFFE, 0x1FFFF, 0x10FFFE, 0x10FFFF
+	};
+	size_t count = sizeof(cps) / sizeof(cps[0]);
+
+	for (size_t i = 0; i < count; i++) {
+		char buffer[4] = { 0 };
+		Error_TinyUTF8 error = No_Error_TinyUTF8;
+
+		const size_t written = encodeCodePoint_TinyUTF8(
+			cps[i], buffer, i, &error
+		);
+		testAssertMsg(written == 0 && error == InvalidCP_Error_TinyUTF8,
+			"%zu: Written: %zu, Error: %s",
+			i, written, nameOfError_TinyUTF8(error)
+		);
+	}
+}
+
+
+static
 void test_outOfRange( )
 {
 	char buffer[4] = { 0 };
@@ -266,6 +291,7 @@ int main( )
 {
 	test_validCodePoint();
 	test_encodingDecoding();
+	test_invalidCP();
 	test_outOfRange();
 	test_destTooSmall();
 	test_srcTooSmall();

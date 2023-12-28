@@ -20,9 +20,15 @@ enum Error_TinyUTF8 {
 	DestTooSmall_Error_TinyUTF8,
 
 	/**
-		A code point argument was beyond U+10FFFF.
+		A code point argument is beyond U+10FFFF.
 	*/
 	CPOutOfRange_Error_TinyUTF8,
+
+	/**
+		A code point argument is not a valid code point
+		for the requested operation.
+	*/
+	InvalidCP_Error_TinyUTF8,
 
 	/**
 		Invalid UTF-8 byte stream.
