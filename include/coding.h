@@ -4,6 +4,12 @@
 Begin
 
 /**
+	@param cp Code point to test.
+*/
+bool isValidCodePoint_TinyUTF8( CodePoint_TinyUTF8 cp );
+
+
+/**
 	@param cp Code point to encode.
 	@param dst Memory where bytes are written to.
 	@param maxOut Maximum number of bytes to write.

@@ -9,6 +9,21 @@ Begin
 // ============================================================================
 
 static
+void test_validCodePoint( )
+{
+	for (CodePoint_TinyUTF8 cp = 0; cp <= 0x10FFFF; cp++) {
+		bool expected = true;
+		if ((cp & 0xFFFE) == 0xFFFE) expected = false;
+		if (cp >= 0xD800 && cp <= 0xDFFF) expected = false;
+		if (cp >= 0xFDD0 && cp <= 0xFDEF) expected = false;
+
+		bool valid = isValidCodePoint_TinyUTF8(cp);
+		testAssertMsg(valid == expected, PRICP_TinyUTF8" failed", cp);
+	}
+}
+
+
+static
 void test_encodingDecoding( )
 {
 	for (CodePoint_TinyUTF8 cp = 0; cp <= 0x10FFFF; cp++) {
@@ -245,6 +260,7 @@ void test_unsafeEncodingDecoding( )
 
 int main( )
 {
+	test_validCodePoint();
 	test_encodingDecoding();
 	test_outOfRange();
 	test_destTooSmall();

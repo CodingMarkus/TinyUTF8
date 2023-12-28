@@ -4,6 +4,24 @@
 Begin
 // ============================================================================
 
+static inline
+bool isValidCodePoint( CodePoint_TinyUTF8 cp )
+{
+	if ((cp & 0xFFFE) == 0xFFFE) return false;
+	if (cp >= 0xD800 && cp <= 0xDFFF) return false;
+	if (cp >= 0xFDD0 && cp <= 0xFDEF) return false;
+	if (cp >= 0x10FFFF) return false;
+	return true;
+}
+
+
+public
+bool isValidCodePoint_TinyUTF8( CodePoint_TinyUTF8 cp )
+{
+	return isValidCodePoint(cp);
+}
+
+
 public
 size_t encodeCodePoint_TinyUTF8(
 	CodePoint_TinyUTF8 cp, void * dst, size_t maxOut,
