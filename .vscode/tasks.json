@@ -27,7 +27,7 @@
 
 		// Debugging
 		{
-			"label": "build test for debugging",
+			"label": "debug test",
 			"command": [
 				"mkdir -p .build/debugtest",
 				"&& cd .build/debugtest",
@@ -41,7 +41,7 @@
 
 		// Releasing
 		{
-			"label": "make release",
+			"label": "release",
 			"command": [
 				"mkdir -p .build/release",
 				"&& cd .build/release",

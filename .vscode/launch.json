@@ -7,7 +7,7 @@
 	"configurations": [
 		{
 			"name": "debug test",
-			"preLaunchTask": "build test for debugging",
+			"preLaunchTask": "debug test",
 			"program": ".build/debugtest/test",
 			"type": "lldb",
 			"request": "launch"
