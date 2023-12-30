@@ -37,7 +37,19 @@
 			],
 			"type": "shell",
 			"problemMatcher": [ ]
-		}
+		},
+
+		// Releasing
+		{
+			"label": "make release",
+			"command": [
+				"mkdir -p .build/release",
+				"&& cd .build/release",
+				"&& ${workspaceFolder}/release"
+			],
+			"type": "shell",
+			"problemMatcher": [ ]
+		},
 	],
 
 	"inputs": [
