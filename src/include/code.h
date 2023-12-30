@@ -1,9 +1,6 @@
 #pragma once
 
-#include "header_begin.h"
-
-#undef Begin
-#undef End
+#include "header.h"
 
 /**
 	Sets some compiler flags at the beginning of code.
@@ -36,4 +33,4 @@
 
 
 
-#include "internal/code_begin.h"
+#include "internal/code.h"

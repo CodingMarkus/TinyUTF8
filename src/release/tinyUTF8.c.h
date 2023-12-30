@@ -10,3 +10,4 @@
 */
 
 #include "../code/coding.c"
+#include "../code/counting.c"

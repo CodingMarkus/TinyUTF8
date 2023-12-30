@@ -1,7 +1,8 @@
 #pragma once
 
-#include "header_begin.h"
-Begin
+#include "header.h"
+BeginHeader
+// ============================================================================
 
 /**
 	@param cp Code point to test.
@@ -42,7 +43,7 @@ size_t decodeCodePoint_TinyUTF8(
 	not perform any error checking and it assumes that no matter how many
 	bytes it wants to write, `dst` has room for it.
 
-	@note
+	@warning
 	You must only use this function with will formatted input data and
 	sufficient output space, otherwise it's behavior is undefined and it may
 	cause security vulnerabilities or even crash the process.
@@ -61,7 +62,7 @@ size_t unsafeEncodeCodePoint_TinyUTF8( CodePoint_TinyUTF8 cp, void * dst );
 	not perform any error checking and it assumes that no matter how many
 	bytes it wants to read, `src` has that many bytes to offer.
 
-	@note
+	@warning
 	You must only use this function with will formatted input data and
 	sufficient output space, otherwise it's behavior is undefined and it may
 	cause security vulnerabilities or even crash the process.
@@ -76,6 +77,5 @@ size_t unsafeDecodeCodePoint_TinyUTF8(
 	const void * src, CodePoint_TinyUTF8 * outCP );
 
 
-
-End
-#include "header_end.h"
+// ============================================================================
+EndHeader

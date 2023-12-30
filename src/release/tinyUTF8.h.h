@@ -10,3 +10,6 @@
 */
 
 #include "coding.h"
+#include "counting.h"
+
+#include "undef.h"

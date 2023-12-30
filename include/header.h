@@ -1,3 +1,5 @@
+#pragma once
+
 #include "types.h"
 
 /**
@@ -9,12 +11,12 @@
 /**
 	Sets some compiler flags at the beginning of a header.
 */
-#define Begin  BeginHeader_TinyUTF8
+#define BeginHeader  BeginHeader_TinyUTF8
 
 /**
 	Resets some compiler flags at the end of a header.
 */
-#define End  EndHeader_TinyUTF8
+#define EndHeader  EndHeader_TinyUTF8
 
 
-#include "internal/header_begin.h"
+#include "internal/header.h"

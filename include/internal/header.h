@@ -1,3 +1,5 @@
+#pragma once
+
 #if __clang__
 	#define optional_TinyUTF8  _Nullable
 	#define BeginHeader_TinyUTF8  _Pragma("clang assume_nonnull begin")
