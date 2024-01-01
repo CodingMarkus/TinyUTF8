@@ -2,8 +2,6 @@
 
 #include "coding.h"
 
-#include <string.h>
-
 #include "code.h"
 Begin
 // ============================================================================
@@ -39,14 +37,17 @@ void test_encodingDecoding( )
 		const size_t written = encodeCodePoint_TinyUTF8(
 			cp, buffer, 4, &error
 		);
+
 		testAssertMsg(written > 0 && !error,
 			"Error: %d", error
 		);
 
 		CodePoint_TinyUTF8 decoded = CodePoint_None_TinyUTF8;
+
 		const size_t read = decodeCodePoint_TinyUTF8(
 			buffer, 4, &decoded, &error
 		);
+
 		testAssertMsg(read > 0 && !error,
 			"Error: %s", nameOfError_TinyUTF8(error)
 		);
@@ -54,6 +55,51 @@ void test_encodingDecoding( )
 		testAssertMsg(decoded == cp,
 			PRICP_TinyUTF8" != "PRICP_TinyUTF8, decoded, cp
 		);
+	}
+}
+
+
+static
+void test_decodingEncoding( )
+{
+	struct {
+		const char * bytes;
+		CodePoint_TinyUTF8 cp;
+	} samples[ ] = {
+		{ "\x79", 0x79 },
+		{ "\xC3\xA4", 0xE4 },
+		{ "\xC2\xAE", 0xAE },
+		{ "\xE2\x82\xAC", 0x20AC },
+		{ "\xF0\x9D\x84\x9E", 0x1D11E },
+		{ NULL, 0 }
+	};
+
+	for (size_t i = 0; samples[i].bytes; i++) {
+		char buffer[4] = { 0 };
+		size_t length = strlen(samples[i].bytes);
+		Error_TinyUTF8 error = No_Error_TinyUTF8;
+		CodePoint_TinyUTF8 decoded = CodePoint_None_TinyUTF8;
+
+		const size_t read = decodeCodePoint_TinyUTF8(
+			samples[i].bytes, length, &decoded, &error
+		);
+
+		testAssertMsg(read == length && !error,
+			"Error: %s", nameOfError_TinyUTF8(error)
+		);
+		testAssertMsg(decoded == samples[i].cp,
+			PRICP_TinyUTF8" != "PRICP_TinyUTF8, decoded, samples[i].cp
+		);
+
+		const size_t written = encodeCodePoint_TinyUTF8(
+			decoded, buffer, 4, &error
+		);
+
+		testAssertMsg(written > 0 && !error,
+			"Error: %d", error
+		);
+		testAssertMsg(read == written, "%zu != %zu", read, written);
+		testAssert(0 == memcmp(buffer, samples[i].bytes, read));
 	}
 }
 
@@ -75,6 +121,7 @@ void test_invalidCP( )
 		const size_t written = encodeCodePoint_TinyUTF8(
 			cps[i], buffer, i, &error
 		);
+
 		testAssertMsg(written == 0 && error == InvalidCP_Error_TinyUTF8,
 			"%zu: Written: %zu, Error: %s",
 			i, written, nameOfError_TinyUTF8(error)
@@ -92,6 +139,7 @@ void test_outOfRange( )
 	size_t written = encodeCodePoint_TinyUTF8(
 		0x10FFFF + 1, buffer, 4, &error
 	);
+
 	testAssertMsg(written == 0 && error == CPOutOfRange_Error_TinyUTF8,
 		"Written: %zu, Error: %s", written, nameOfError_TinyUTF8(error)
 	);
@@ -99,6 +147,7 @@ void test_outOfRange( )
 	written = encodeCodePoint_TinyUTF8(
 		CodePoint_None_TinyUTF8, buffer, 4, &error
 	);
+
 	testAssertMsg(written == 0 && error == CPOutOfRange_Error_TinyUTF8,
 		"Written: %zu, Error: %s", written, nameOfError_TinyUTF8(error)
 	);
@@ -120,6 +169,7 @@ void test_destTooSmall( )
 		const size_t written = encodeCodePoint_TinyUTF8(
 			cps[i], buffer, i, &error
 		);
+
 		testAssertMsg(written == 0 && error == DestTooSmall_Error_TinyUTF8,
 			"%zu: Written: %zu, Error: %s",
 			i, written, nameOfError_TinyUTF8(error)
@@ -143,13 +193,16 @@ void test_srcTooSmall( )
 		const size_t written = encodeCodePoint_TinyUTF8(
 			cps[i], buffer, i + 1, &error
 		);
+
 		testAssertMsg(written > 0 && !error,
 			"Written: %zu, Error: %s", written, nameOfError_TinyUTF8(error)
 		);
 
 		CodePoint_TinyUTF8 decoded = CodePoint_None_TinyUTF8;
 		const size_t read = decodeCodePoint_TinyUTF8(
-			buffer, i, &decoded, &error);
+			buffer, i, &decoded, &error
+		);
+
 		testAssertMsg(read == 0 && error == SrcTooSmall_Error_TinyUTF8,
 			"Written: %zu, Error: %s", written, nameOfError_TinyUTF8(error)
 		);
@@ -204,9 +257,11 @@ void test_invalidCoding( )
 		const size_t count = strlen(str);
 		Error_TinyUTF8 error = No_Error_TinyUTF8;
 		CodePoint_TinyUTF8 decoded = CodePoint_None_TinyUTF8;
+
 		const size_t read = decodeCodePoint_TinyUTF8(
 			str, count, &decoded, &error
 		);
+
 		testAssertMsg(read == 0, "%zu: Read: %zu", i - 1, read);
 		testAssertMsg(error == InvalidCoding_Error_TinyUTF8,
 			"%zu: Error: %s", i - 1, nameOfError_TinyUTF8(error)
@@ -244,9 +299,11 @@ void test_invalidCoddedCP( )
 		const size_t count = strlen(str);
 		Error_TinyUTF8 error = No_Error_TinyUTF8;
 		CodePoint_TinyUTF8 decoded = CodePoint_None_TinyUTF8;
+
 		const size_t read = decodeCodePoint_TinyUTF8(
 			str, count, &decoded, &error
 		);
+
 		testAssertMsg(read == 0, "%zu: Read: %zu", i - 1, read);
 		testAssertMsg(error == InvalidCodedCP_Error_TinyUTF8,
 			"%zu: Error: %s", i - 1, nameOfError_TinyUTF8(error)
@@ -267,20 +324,23 @@ void test_unsafeEncodingDecoding( )
 
 		char buffer[4] = { 0 };
 		size_t written = unsafeEncodeCodePoint_TinyUTF8(cp, buffer);
-
 		CodePoint_TinyUTF8 decoded = CodePoint_None_TinyUTF8;
+
 		size_t read = unsafeDecodeCodePoint_TinyUTF8(buffer, &decoded);;
+
 		testAssertMsg(read == written, "%zu != %zu", read, written);
 
 		char buffer2[4] = { 0 };
 		Error_TinyUTF8 error = No_Error_TinyUTF8;
 
 		size_t written2 = encodeCodePoint_TinyUTF8(cp, buffer2, 4, &error);
+
 		testAssert(written == written2);
 		testAssert(0 == memcmp(buffer, buffer2, written));
 
 		CodePoint_TinyUTF8 decoded2 = CodePoint_None_TinyUTF8;
 		size_t read2 = decodeCodePoint_TinyUTF8(buffer, 4, &decoded2, &error);
+
 		testAssert(read == read2);
 		testAssert(decoded == decoded2);
 	}
@@ -291,6 +351,7 @@ int main( )
 {
 	test_validCodePoint();
 	test_encodingDecoding();
+	test_decodingEncoding();
 	test_invalidCP();
 	test_outOfRange();
 	test_destTooSmall();
