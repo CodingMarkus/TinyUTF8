@@ -1,5 +1,7 @@
 #pragma once
 
+#include "internal/categories.h"
+
 #include "header.h"
 BeginHeader
 // ============================================================================
