@@ -44,8 +44,6 @@ CodePointCategory_TinyUTF8 categoryOf_TinyUTF8 (
 	CodePoint_TinyUTF8 rangeStart = entry >> 11;
 	CodePoint_TinyUTF8 rangeEnd = rangeStart + (entry & 0x3F);
 	if (cp < rangeStart || cp > rangeEnd) {
-		// printf("Not found!\n");
-		// printf("start: %X, end: %X, cp: %X\n", rangeStart, rangeEnd, cp);
 		return Cn_CodePointCategory_TinyUTF8;
 	}
 	return ((entry >> 6) & 0x1F);
