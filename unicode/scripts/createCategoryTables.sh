@@ -142,7 +142,7 @@ fi
 output="
 };
 
-const size_t categoryLookupTableCount = $lookupTableUpTo;
+const size_t categoryLookupTableEndsAt = $lookupTableUpTo;
 
 "
 printf '%s' "$output"
@@ -162,9 +162,9 @@ printRange( )
 	#  0                   1                   2                   3
 	#  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
 	# +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-	# |       First code point or range         |  Len  |   Category  |
+	# |       First code point of range         |  Categ. |   Length  |
 	# +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-	calculation="($rangeStart * 2^11) + ($rangeLength * 2^5) + $rangeCategory"
+	calculation="($rangeStart * 2^11) + ($rangeCategory * 2^6) + $rangeLength"
 	result=$( printf 'obase=16; %s' "$calculation" | bc )
 	result="0x$result"
 
@@ -211,10 +211,10 @@ do
 		continue
 	fi
 
-	# category changed or length exceeds 6 bits or discontinuation
+	# Category changed or length exceeds 6 bits or discontinuation
 	if
 		[ "$category" != "$rangeCategory" ] \
-		|| [ "$rangeLength" -eq 127 ]       \
+		|| [ "$rangeLength" -eq 63 ]        \
 		|| [ "$cp" != "$rangeNext" ]
 	then
 		printRange

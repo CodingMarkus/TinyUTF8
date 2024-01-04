@@ -15,8 +15,8 @@ void test_categoryMapping( )
 			categoryTestTable[i].cp
 		);
 		testAssertMsg(category == categoryTestTable[i].category,
-			"%zu: Expected: %d, Got: %d",
-			i, categoryTestTable[i].cp, category
+			"0x%zX: Expected: %d, Got: %d",
+			i, categoryTestTable[i].category, category
 		);
 	}
 }

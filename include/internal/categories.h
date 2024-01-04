@@ -6,8 +6,11 @@ BeginHeader
 
 typedef enum {
 
+	/// Out of valid code point range
+	Invalid_CodePointCategory_TinyUTF8,
+
 	/// Uppers case letter
-	Lu_CodePointCategory_TinyUTF8 = 1,
+	Lu_CodePointCategory_TinyUTF8,
 
 	/// Lower case letter
 	Ll_CodePointCategory_TinyUTF8,
