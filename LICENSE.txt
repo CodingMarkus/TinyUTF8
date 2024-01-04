@@ -1,3 +1,15 @@
+NOTE
+====
+
+If any directory of the project contains a file named LICENSE.txt, all files
+in  that directory and in all subdirectories of that directory are licensed
+under the license found in that file and not under the license stated below.
+The license stated below is however the main license of the project and applies
+to all files if no other license would otherwise apply to them.
+
+-------------------------------------------------------------------------------
+
+
                                  Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
