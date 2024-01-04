@@ -30,7 +30,7 @@ bool getStringCounts_TinyUTF8(
 		if (minBytesLeft == 0) break;
 
 		CodePoint_TinyUTF8 cp = InvalidCodedCP_Error_TinyUTF8;
-		size_t bytesUsed = decodeCodePoint_TinyUTF8(
+		size_t bytesUsed = decode_TinyUTF8(
 			ptr, minBytesLeft, &cp, outError
 		);
 
@@ -41,7 +41,7 @@ bool getStringCounts_TinyUTF8(
 
 		cpCount++;
 		byteCount += bytesUsed;
-		if (outCharCount && isCombiningCodePoint_TinyUTF8(cp)) charCount++;
+		if (outCharCount && isCharacter_TinyUTF8(cp)) charCount++;
 	}
 
 	if (outByteCount) *outByteCount = byteCount;

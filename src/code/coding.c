@@ -23,7 +23,7 @@ bool isValidCodePoint_TinyUTF8( CodePoint_TinyUTF8 cp )
 
 
 public
-size_t encodeCodePoint_TinyUTF8(
+size_t encode_TinyUTF8(
 	CodePoint_TinyUTF8 cp, void * dst, size_t maxOut,
 	Error_TinyUTF8 * optional outError )
 {
@@ -82,7 +82,7 @@ size_t encodeCodePoint_TinyUTF8(
 
 
 public
-size_t unsafeEncodeCodePoint_TinyUTF8( CodePoint_TinyUTF8 cp, void * dst )
+size_t unsafeEncode_TinyUTF8( CodePoint_TinyUTF8 cp, void * dst )
 {
 	uint8_t * ptr = dst;
 
@@ -114,7 +114,7 @@ size_t unsafeEncodeCodePoint_TinyUTF8( CodePoint_TinyUTF8 cp, void * dst )
 
 
 public
-size_t decodeCodePoint_TinyUTF8(
+size_t decode_TinyUTF8(
 	const void * src, size_t maxIn, CodePoint_TinyUTF8 * outCP,
 	Error_TinyUTF8 * optional outError )
 {
@@ -248,7 +248,7 @@ size_t decodeCodePoint_TinyUTF8(
 
 
 public
-size_t unsafeDecodeCodePoint_TinyUTF8(
+size_t unsafeDecode_TinyUTF8(
 	const void * src, CodePoint_TinyUTF8 * outCP )
 {
 	const uint8_t * ptr = src;

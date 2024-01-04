@@ -19,7 +19,7 @@ bool isValidCodePoint_TinyUTF8( CodePoint_TinyUTF8 cp );
 	@returns
 	The number of bytes written or 0 in case of an error.
 */
-size_t encodeCodePoint_TinyUTF8(
+size_t encode_TinyUTF8(
 	CodePoint_TinyUTF8 cp, void * dst, size_t maxOut,
 	Error_TinyUTF8 * optional outError );
 
@@ -33,13 +33,13 @@ size_t encodeCodePoint_TinyUTF8(
 	@returns
 	The number of bytes read or 0 in case of an error.
 */
-size_t decodeCodePoint_TinyUTF8(
+size_t decode_TinyUTF8(
 	const void * src, size_t maxIn, CodePoint_TinyUTF8 * outCP,
 	Error_TinyUTF8 * optional outError );
 
 
 /**
-	This function works the same as `encodeCodePoint_TinyUTF8()` but it does
+	This function works the same as `encode_TinyUTF8()` but it does
 	not perform any error checking and it assumes that no matter how many
 	bytes it wants to write, `dst` has room for it.
 
@@ -54,11 +54,11 @@ size_t decodeCodePoint_TinyUTF8(
 	@returns
 	The number of bytes written.
 */
-size_t unsafeEncodeCodePoint_TinyUTF8( CodePoint_TinyUTF8 cp, void * dst );
+size_t unsafeEncode_TinyUTF8( CodePoint_TinyUTF8 cp, void * dst );
 
 
 /**
-	This function works the same as `decodeCodePoint_TinyUTF8()` but it does
+	This function works the same as `decode_TinyUTF8()` but it does
 	not perform any error checking and it assumes that no matter how many
 	bytes it wants to read, `src` has that many bytes to offer.
 
@@ -73,7 +73,7 @@ size_t unsafeEncodeCodePoint_TinyUTF8( CodePoint_TinyUTF8 cp, void * dst );
 	@returns
 	The number of bytes read or 0 in case of an error.
 */
-size_t unsafeDecodeCodePoint_TinyUTF8(
+size_t unsafeDecode_TinyUTF8(
 	const void * src, CodePoint_TinyUTF8 * outCP );
 
 

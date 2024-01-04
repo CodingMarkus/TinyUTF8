@@ -5,7 +5,8 @@ Begin
 // ============================================================================
 
 public
-bool isCombiningCodePoint_TinyUTF8 ( CodePoint_TinyUTF8 cp )
+public
+bool isCharacter_TinyUTF8 ( CodePoint_TinyUTF8 cp )
 {
 	return false;
 }

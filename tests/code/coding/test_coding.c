@@ -34,7 +34,7 @@ void test_encodingDecoding( )
 		char buffer[4] = { 0 };
 		Error_TinyUTF8 error = No_Error_TinyUTF8;
 
-		const size_t written = encodeCodePoint_TinyUTF8(
+		const size_t written = encode_TinyUTF8(
 			cp, buffer, 4, &error
 		);
 
@@ -44,7 +44,7 @@ void test_encodingDecoding( )
 
 		CodePoint_TinyUTF8 decoded = CodePoint_None_TinyUTF8;
 
-		const size_t read = decodeCodePoint_TinyUTF8(
+		const size_t read = decode_TinyUTF8(
 			buffer, 4, &decoded, &error
 		);
 
@@ -80,7 +80,7 @@ void test_decodingEncoding( )
 		Error_TinyUTF8 error = No_Error_TinyUTF8;
 		CodePoint_TinyUTF8 decoded = CodePoint_None_TinyUTF8;
 
-		const size_t read = decodeCodePoint_TinyUTF8(
+		const size_t read = decode_TinyUTF8(
 			samples[i].bytes, length, &decoded, &error
 		);
 
@@ -91,7 +91,7 @@ void test_decodingEncoding( )
 			PRICP_TinyUTF8" != "PRICP_TinyUTF8, decoded, samples[i].cp
 		);
 
-		const size_t written = encodeCodePoint_TinyUTF8(
+		const size_t written = encode_TinyUTF8(
 			decoded, buffer, 4, &error
 		);
 
@@ -118,7 +118,7 @@ void test_invalidCP( )
 		char buffer[4] = { 0 };
 		Error_TinyUTF8 error = No_Error_TinyUTF8;
 
-		const size_t written = encodeCodePoint_TinyUTF8(
+		const size_t written = encode_TinyUTF8(
 			cps[i], buffer, i, &error
 		);
 
@@ -136,7 +136,7 @@ void test_outOfRange( )
 	char buffer[4] = { 0 };
 	Error_TinyUTF8 error = No_Error_TinyUTF8;
 
-	size_t written = encodeCodePoint_TinyUTF8(
+	size_t written = encode_TinyUTF8(
 		0x10FFFF + 1, buffer, 4, &error
 	);
 
@@ -144,7 +144,7 @@ void test_outOfRange( )
 		"Written: %zu, Error: %s", written, nameOfError_TinyUTF8(error)
 	);
 
-	written = encodeCodePoint_TinyUTF8(
+	written = encode_TinyUTF8(
 		CodePoint_None_TinyUTF8, buffer, 4, &error
 	);
 
@@ -166,7 +166,7 @@ void test_destTooSmall( )
 		char buffer[4] = { 0 };
 		Error_TinyUTF8 error = No_Error_TinyUTF8;
 
-		const size_t written = encodeCodePoint_TinyUTF8(
+		const size_t written = encode_TinyUTF8(
 			cps[i], buffer, i, &error
 		);
 
@@ -190,7 +190,7 @@ void test_srcTooSmall( )
 		char buffer[4] = { 0 };
 		Error_TinyUTF8 error = No_Error_TinyUTF8;
 
-		const size_t written = encodeCodePoint_TinyUTF8(
+		const size_t written = encode_TinyUTF8(
 			cps[i], buffer, i + 1, &error
 		);
 
@@ -199,7 +199,7 @@ void test_srcTooSmall( )
 		);
 
 		CodePoint_TinyUTF8 decoded = CodePoint_None_TinyUTF8;
-		const size_t read = decodeCodePoint_TinyUTF8(
+		const size_t read = decode_TinyUTF8(
 			buffer, i, &decoded, &error
 		);
 
@@ -258,7 +258,7 @@ void test_invalidCoding( )
 		Error_TinyUTF8 error = No_Error_TinyUTF8;
 		CodePoint_TinyUTF8 decoded = CodePoint_None_TinyUTF8;
 
-		const size_t read = decodeCodePoint_TinyUTF8(
+		const size_t read = decode_TinyUTF8(
 			str, count, &decoded, &error
 		);
 
@@ -300,7 +300,7 @@ void test_invalidCoddedCP( )
 		Error_TinyUTF8 error = No_Error_TinyUTF8;
 		CodePoint_TinyUTF8 decoded = CodePoint_None_TinyUTF8;
 
-		const size_t read = decodeCodePoint_TinyUTF8(
+		const size_t read = decode_TinyUTF8(
 			str, count, &decoded, &error
 		);
 
@@ -323,23 +323,23 @@ void test_unsafeEncodingDecoding( )
 		if ((cp & 0xFFFF) == 0xFFFE) { cp++; continue; }
 
 		char buffer[4] = { 0 };
-		size_t written = unsafeEncodeCodePoint_TinyUTF8(cp, buffer);
+		size_t written = unsafeEncode_TinyUTF8(cp, buffer);
 		CodePoint_TinyUTF8 decoded = CodePoint_None_TinyUTF8;
 
-		size_t read = unsafeDecodeCodePoint_TinyUTF8(buffer, &decoded);;
+		size_t read = unsafeDecode_TinyUTF8(buffer, &decoded);;
 
 		testAssertMsg(read == written, "%zu != %zu", read, written);
 
 		char buffer2[4] = { 0 };
 		Error_TinyUTF8 error = No_Error_TinyUTF8;
 
-		size_t written2 = encodeCodePoint_TinyUTF8(cp, buffer2, 4, &error);
+		size_t written2 = encode_TinyUTF8(cp, buffer2, 4, &error);
 
 		testAssert(written == written2);
 		testAssert(0 == memcmp(buffer, buffer2, written));
 
 		CodePoint_TinyUTF8 decoded2 = CodePoint_None_TinyUTF8;
-		size_t read2 = decodeCodePoint_TinyUTF8(buffer, 4, &decoded2, &error);
+		size_t read2 = decode_TinyUTF8(buffer, 4, &decoded2, &error);
 
 		testAssert(read == read2);
 		testAssert(decoded == decoded2);
