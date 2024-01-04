@@ -6,7 +6,11 @@
 BeginHeader
 // ============================================================================
 
-bool isCombiningCodePoint_TinyUTF8 ( CodePoint_TinyUTF8 cp );
+CodePointCategory_TinyUTF8 categoryOf_TinyUTF8 (
+	CodePoint_TinyUTF8 cp );
+
+
+bool isCharacter_TinyUTF8 ( CodePoint_TinyUTF8 cp );
 
 // ============================================================================
 EndHeader
