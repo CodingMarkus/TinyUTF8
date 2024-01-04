@@ -16,11 +16,11 @@ Character
 
 When TinyUTF8 refers to character, it means a "printable" character on screen, which may in fact have a single code point or it may be the result of combining multiple code points together. o and ¨ are two code points and together they form a single character ö.
 
-The term "printable" can be slightly misleading in this context, as whitespace (spaces, tabs, etc.) or line breaks are also characters, yet they don't print anything on the screen, they just move other characters around, but they do influence what is printed and they are independent characters. Also control characters (escape, backspace, bell, etc.) would be characters, despite the fact that they usually don't print anything on the screen (they don't have a defined representation) and may not even have an effect on what is visible on the screen (backspace may have an effect, escape rather not, end of record almost never), but those are rather historical and they have always been treated as characters.
+The term "printable" can be slightly misleading in this context, as whitespace is also considered to be a printable character, despite not printing anything on the screen, yet they take up printable screen space in the same way other characters do. In this text document, ¨ is in fact represented by combing the code point of ¨ with the code point of a space and only those two together form a character and that's why a space on its own also must be considered to be a character.
 
-A BOM (Byte Order Mark) or a code point changing the text direction would not be a character. A ¨ on its own would also not be a character, as it always must be combined with another code point to actually form a character. In this text document, ¨ is in fact represented by combing the code point of ¨ with the code point of a space and only those two together form a character.
+In contrast, a BOM (Byte Order Mark) or a code point changing the text direction or layout (including line breaks, tabs, etc.) is not considered a character. A ¨ on its own is not considered a character either, as it always must be combined with another code point to actually form a character. Control "characters" are also not considered to be characters as they have no printable representation.
 
-Note that depending on language, multiple characters may still be perceived as a single character and a single character may be perceived as multiple characters by the user. E.g. ﬁ is a single character with only a single code point but in fact it represents the characters f and i as a single glyph, a so called "ligature".
+Note that depending on language, multiple characters may still be perceived as a single character and a single character may be perceived as multiple characters by the reader. E.g. ﬁ is a single character with only a single code point but in fact it represents the two characters f and i combined to a single glyph, a so called "ligature".
 
 
 Encoding
