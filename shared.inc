@@ -7,7 +7,7 @@ readonly LIBNAME='libTinyUTF8.a'
 NEWLINE=$( printf '\n_' ); NEWLINE=${NEWLINE%_}; readonly NEWLINE
 
 
-syntaxError()
+syntaxError( )
 {
 	_errorMsg=$1
 
@@ -16,7 +16,7 @@ syntaxError()
 }
 
 
-error()
+error( )
 {
 	_errorMsg=$1
 
@@ -26,7 +26,7 @@ error()
 
 
 
-findCompileFlags()
+findCompileFlags( )
 {
 	_src=$1
 	_stopDir=$2
@@ -56,7 +56,7 @@ findCompileFlags()
 }
 
 
-quote()
+quote( )
 {
 	_toQuote=$1
 
@@ -69,7 +69,7 @@ quote()
 }
 
 
-anyFileIsNewerThan()
+anyFileIsNewerThan( )
 {
 	compareTo=$1
 
@@ -78,7 +78,7 @@ anyFileIsNewerThan()
 }
 
 
-depListForSourceFile()
+depListForSourceFile( )
 (
 	srcFile=$1
 	flagsFileContent=$2
@@ -96,7 +96,7 @@ depListForSourceFile()
 )
 
 
-objectFileIsOutdated()
+objectFileIsOutdated( )
 {
 	_objectFile=$1
 	_srcFile=$2
@@ -114,7 +114,7 @@ objectFileIsOutdated()
 }
 
 
-parseCfgFile()
+parseCfgFile( )
 {
 	_varName=$1
 	_cfgFile=$2
@@ -129,7 +129,7 @@ parseCfgFile()
 }
 
 
-shouldLinkAddressSanitizer()
+shouldLinkAddressSanitizer( )
 {
 	_buildArgs=$1
 
@@ -140,7 +140,7 @@ shouldLinkAddressSanitizer()
 }
 
 
-extractInclude()
+extractInclude( )
 {
 	_line=$1
 
@@ -149,7 +149,7 @@ extractInclude()
 }
 
 
-isPragmaOnce()
+isPragmaOnce( )
 {
 	_header=$1
 
