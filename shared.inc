@@ -1,5 +1,5 @@
 #!/bin/sh
-set -e
+set -e -u
 
 # shellcheck disable=2034
 readonly LIBNAME='libTinyUTF8.a'
@@ -82,7 +82,7 @@ depListForSourceFile()
 (
 	srcFile=$1
 	flagsFileContent=$2
-	flagsFileDir=$3
+	flagsFileDir=${3-}
 
 	[ -n "$flagsFileDir" ] && cd "$flagsFileDir"
 
