@@ -16,7 +16,7 @@ Character
 
 When TinyUTF8 refers to character, it means a "printable" character on screen, which may in fact have a single code point or it may be the result of combining multiple code points together. o and ¨ are two code points and together they form a single character ö.
 
-The term "printable" can be slightly misleading in this context, as whitespace is also considered to be a printable character, despite not printing anything on the screen, yet they take up printable screen space in the same way other characters do. In this text document, ¨ is in fact represented by combing the code point of ¨ with the code point of a space and only those two together form a character and that's why a space on its own also must be considered to be a character.
+The term "printable" can be slightly misleading in this context, as whitespace is also considered to be a printable character, despite not printing anything on the screen, yet they take up printable screen space in the same way other characters do. In this text document, ¨ is in fact represented by combing the code point of ¨ with the code point of a space and only those two together form a character and that's another reason why a space on its own also must be considered to be a character; aside from  the fact that combining characters do also exist as standalone Unicode code points.
 
 In contrast, a BOM (Byte Order Mark) or a code point changing the text direction or layout (including line breaks, tabs, etc.) is not considered a character. A ¨ on its own is not considered a character either, as it always must be combined with another code point to actually form a character. Control "characters" are also not considered to be characters as they have no printable representation.
 
