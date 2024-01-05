@@ -60,10 +60,37 @@ void test_countCodePoints( )
 }
 
 
+static
+void test_countCharacters( )
+{
+	size_t countChars = 0;
+	Error_TinyUTF8 error = No_Error_TinyUTF8;
+
+	bool success = getStringCounts_TinyUTF8(
+		composedUTF8TestString,
+		NULL, NULL, &countChars,
+		&error
+	);
+
+	testAssertMsg(success && !error, "Error: %s", nameOfError_TinyUTF8(error));
+	testAssertMsg(countChars == 212, "Count: %zu", countChars);
+
+	success = getStringCounts_TinyUTF8(
+		decomposedUTF8TestString,
+		NULL, NULL, &countChars,
+		&error
+	);
+
+	testAssertMsg(success && !error, "Error: %s", nameOfError_TinyUTF8(error));
+	testAssertMsg(countChars == 212, "Count: %zu", countChars);
+}
+
+
 int main( )
 {
 	test_countBytes();
 	test_countCodePoints();
+	test_countCharacters();
 	return 0;
 }
 

@@ -53,6 +53,20 @@ CodePointCategory_TinyUTF8 categoryOf_TinyUTF8 (
 public
 bool isCharacter_TinyUTF8 ( CodePoint_TinyUTF8 cp )
 {
+	CodePointCategory_TinyUTF8 category = categoryOf_TinyUTF8(cp);
+
+	if (category >= Lu_CodePointCategory_TinyUTF8
+		&& category <= Lo_CodePointCategory_TinyUTF8)
+	{
+		return true;
+	}
+
+	if (category >= Nd_CodePointCategory_TinyUTF8
+		&& category <= Zs_CodePointCategory_TinyUTF8)
+	{
+		return true;
+	}
+
 	return false;
 }
 

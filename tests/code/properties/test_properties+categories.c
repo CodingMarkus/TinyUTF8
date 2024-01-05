@@ -25,7 +25,7 @@ void test_categoryMapping( )
 void test_categoryMappingUnassigned( )
 {
 	CodePointCategory_TinyUTF8 category = categoryOf_TinyUTF8(0x10FFFC);
-	testAssertMsg(Cn_CodePointCategory_TinyUTF8 == category,
+	testAssertMsg(category == Cn_CodePointCategory_TinyUTF8,
 		"Expected: %d, Got: %d",
 		Cn_CodePointCategory_TinyUTF8, category
 	);
@@ -37,7 +37,7 @@ void test_categoryMappingInvalid( )
 	CodePointCategory_TinyUTF8 category = categoryOf_TinyUTF8(
 		CodePoint_MAX_TinyUTF8 + 1
 	);
-	testAssertMsg(Invalid_CodePointCategory_TinyUTF8 == category,
+	testAssertMsg(category == Invalid_CodePointCategory_TinyUTF8,
 		"Expected: %d, Got: %d",
 		Invalid_CodePointCategory_TinyUTF8, category
 	);
