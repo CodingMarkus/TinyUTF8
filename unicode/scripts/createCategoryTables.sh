@@ -5,12 +5,9 @@ readonly lookupTableUpTo=127
 readonly outValuesPerLineLookupTable=8
 readonly outValuesPerLineSearchTable=4
 
-input='UnicodeData.txt'
-if [ ! -f "$input" ]
-then
-	echo "File $input not found!" >&2
-	exit 1
-fi
+. "$( dirname "$0")/shared.inc"
+
+input=$( checkForUnicodeDataFile )
 
 
 mapCategory( )
@@ -93,6 +90,8 @@ printTableEntry( )
 	outValuesCurrentLine=$(( outValuesCurrentLine + 1 ))
 }
 
+
+printHeaderComment
 
 output="
 #include \"internal/stdc.h\"

@@ -1,12 +1,11 @@
 #!/bin/sh
 set -e -u
 
-input='UnicodeData.txt'
-if [ ! -f "$input" ]
-then
-	echo "File $input not found!" >&2
-	exit 1
-fi
+. "$( dirname "$0")/shared.inc"
+
+input=$( checkForUnicodeDataFile )
+
+printHeaderComment
 
 output="
 #include \"internal/types.h\"
