@@ -74,6 +74,7 @@ anyFileIsNewerThan( )
 	compareTo=$1
 
 	shift
+	[ -z "${1-}" ] && return 0
 	[ -n "$( find "$@" -newer "$compareTo" )" ]
 }
 
@@ -88,11 +89,16 @@ depListForSourceFile( )
 
 	if ! depList=$( eval "clang -MM $flagsFileContent \"$srcFile\"" )
 	then
-		exit 1
+		return 1
 	fi
 
-	printf '%s' "$depList" | xargs -n1 | grep -v -e '^$' -e '\.o:$' \
+	depList=$(
+		printf '%s' "$depList" | xargs -n1 \
+		| grep -v -e '^$' -e '\.o:$' \
 		| sed 's/\(.*\)/"\1" /' | tr -d '\n'
+	)
+	[ -z "$depList" ] && return 1
+	prtinf "$depList"
 )
 
 
@@ -108,8 +114,13 @@ objectFileIsOutdated( )
 
 	(
 		[ -n "$_flagsFileDir" ] && cd "$_flagsFileDir"
-		_depList=$( depListForSourceFile "$_srcFile" "$_flagsFileContent" )
-		eval "anyFileIsNewerThan \"$1\" $_depList"
+		if ! depList=$( depListForSourceFile "$_srcFile" "$_flagsFileContent" )
+		then
+			return 1
+		fi
+
+		[ -n "$depList" ] || return 1
+		eval "anyFileIsNewerThan \"$1\" $depList"
 	)
 }
 
