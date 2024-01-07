@@ -9,7 +9,17 @@
 
 #include "internal/stdc.h"
 
-/// Table up to code point 127
+/**
+	Table up to code point 127
+
+	0                   1                   2                   3
+	0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+	+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+	|U|  Value1 |  Value2 |  Value3 | ...
+	+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+	U = unused
+*/
 static
 const uint16_t categoryLookupTable[ ] = {
 	0x5E52, 0x4A92, 0x4A4E, 0x3E53, 0x49B2, 0x4929, 0x2529, 0x2529,
@@ -21,7 +31,16 @@ const uint16_t categoryLookupTable[ ] = {
 const size_t categoryLookupTableEndsAt = 127;
 
 
-/// Starts at code point 128
+/**
+	Starts at code point 128
+
+	0                   1                   2                   3
+	0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+	+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+	|       First code point of range         |  Categ. |   Length  |
+	+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+	:
+*/
 static
 const uint32_t categorySearchTable[ ] = {
 	0x4069F, 0x505C0, 0x50C80, 0x51503,

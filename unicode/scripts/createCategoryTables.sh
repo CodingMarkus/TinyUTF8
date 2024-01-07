@@ -70,8 +70,11 @@ printTableEntry( )
 	#  0                   1                   2                   3
 	#  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
 	# +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-	# |U|  Value1 |  Value2 |  Value3 |
+	# |U|  Value1 |  Value2 |  Value3 | ...
 	# +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+	#
+	# U = unused
+	#
 	calculation="($tableValue1 * 2^10) + ($tableValue2 * 2^5) + $tableValue3"
 	result=$( printf 'obase=16; %s' "$calculation" | bc )
 	result="0x$result"
@@ -96,7 +99,17 @@ printHeaderComment
 output="
 #include \"internal/stdc.h\"
 
-/// Table up to code point $lookupTableUpTo
+/**
+	Table up to code point $lookupTableUpTo
+
+	0                   1                   2                   3
+	0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+	+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+	|U|  Value1 |  Value2 |  Value3 | ...
+	+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+	U = unused
+*/
 static
 const uint16_t categoryLookupTable[ ] = {
 "
@@ -163,6 +176,8 @@ printRange( )
 	# +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 	# |       First code point of range         |  Categ. |   Length  |
 	# +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+	# :
+	#
 	calculation="($rangeStart * 2^11) + ($rangeCategory * 2^6) + $rangeLength"
 	result=$( printf 'obase=16; %s' "$calculation" | bc )
 	result="0x$result"
@@ -184,7 +199,16 @@ printRange( )
 
 
 output="
-/// Starts at code point $(( lookupTableUpTo + 1 ))
+/**
+	Starts at code point $(( lookupTableUpTo + 1 ))
+
+	0                   1                   2                   3
+	0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+	+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+	|       First code point of range         |  Categ. |   Length  |
+	+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+	:
+*/
 static
 const uint32_t categorySearchTable[ ] = {
 "
