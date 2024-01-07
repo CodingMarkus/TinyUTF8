@@ -352,12 +352,14 @@ int main( )
 	test_validCodePoint();
 	test_encodingDecoding();
 	test_decodingEncoding();
+
 	test_invalidCP();
 	test_outOfRange();
 	test_destTooSmall();
 	test_srcTooSmall();
 	test_invalidCoding();
 	test_invalidCoddedCP();
+
 	test_unsafeEncodingDecoding();
 	return 0;
 }
