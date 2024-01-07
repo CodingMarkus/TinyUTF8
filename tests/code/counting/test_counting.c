@@ -2,7 +2,8 @@
 
 #include "counting.h"
 
-#include "test_stringsNF.h"
+#include "testData_stringsNF.h"
+#include "testData_stringsBad.h"
 
 #include "code.h"
 Begin
@@ -139,11 +140,34 @@ void test_countCharacters( )
 }
 
 
+static
+void test_badStrings( )
+{
+	for (size_t i = 0; testStringsBad[i].string; i++) {
+		size_t count = 0;
+		Error_TinyUTF8 error = No_Error_TinyUTF8;
+
+		bool success = getStringCounts_TinyUTF8(
+			testStringsBad[i].string,
+			&count, &count, &count,
+			&error
+		);
+		testAssertMsg(!success, "%zu incorrectly succeeded", i);
+		testAssertMsg(error == testStringsBad[i].expectedError,
+			"%zu: Error: %s, Expected: %s",
+			i, nameOfError_TinyUTF8(error),
+			nameOfError_TinyUTF8(testStringsBad[i].expectedError)
+		);
+	}
+}
+
+
 int main( )
 {
 	test_count();
 	test_countCodePoints();
 	test_countCharacters();
+	test_badStrings();
 	return 0;
 }
 
