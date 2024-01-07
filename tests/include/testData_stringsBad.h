@@ -1,42 +1,6 @@
 #include <stdlib.h>
 #include "internal/errors.h"
 
-/*
-	Create UTF-8 from UTF-32 using the following JS code:
-
-	const inputValues= [
-		// 'u+DFFFu+00'
-	];
-	for (var i = 0; i < inputValues.length; i++) {
-		const utf32String = inputValues[i];
-		const utf32Array = utf32String.split('u+').filter(Boolean);
-		const utf8Array = utf32Array.map(utf32 => {
-			const codePoint = parseInt(utf32, 16);
-			if (codePoint < 0x80) {
-				return codePoint;
-			} else if (codePoint < 0x800) {
-				return [0xc0 | (codePoint >> 6),
-					0x80 | (codePoint & 0x3f)];
-			} else if (codePoint < 0x10000) {
-				return [0xe0 | (codePoint >> 12),
-					0x80 | ((codePoint >> 6) & 0x3f),
-					0x80 | (codePoint & 0x3f)];
-			} else {
-				return [0xf0 | (codePoint >> 18),
-					0x80 | ((codePoint >> 12) & 0x3f),
-					0x80 | ((codePoint >> 6) & 0x3f),
-					0x80 | (codePoint & 0x3f)];
-			}
-		});
-		const utf8Result = utf8Array.flat().map(
-		code => `0x${code.toString(16).padStart(2, '0')}`);
-		console.log(utf8Result.join(', '));
-	}
-
-	E.g. run at: https://reqbin.com/code/javascript
-
-*/
-
 
 static struct {
 	const char * string;
