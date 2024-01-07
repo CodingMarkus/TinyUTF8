@@ -21,5 +21,19 @@ CodePointCategory_TinyUTF8 categoryOf_TinyUTF8 (
 */
 bool isCharacter_TinyUTF8 ( CodePoint_TinyUTF8 cp );
 
+
+/**
+	Some characters do not have a dedicated case,
+	those are considered neither upper nor lower case.
+*/
+bool isUpperCaseCharacter_TinyUTF8 ( CodePoint_TinyUTF8 cp );
+
+
+/**
+	Some characters do not have a dedicated case,
+	those are considered neither upper nor lower case.
+*/
+bool isLowerCaseCharacter_TinyUTF8 ( CodePoint_TinyUTF8 cp );
+
 // ============================================================================
 EndHeader

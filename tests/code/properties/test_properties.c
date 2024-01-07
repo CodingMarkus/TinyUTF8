@@ -66,10 +66,45 @@ void test_isCharacter( )
 			case Cn_CodePointCategory_TinyUTF8: expected = false; break;
 			default: break;
 		}
-
 		testAssertMsg(isChar == expected,
 			"0x%X: %d != %d",
 			categoryTestTable[i].cp, isChar, expected
+		);
+	}
+}
+
+
+static
+void test_isUpperCase( )
+{
+	for (size_t i = 0; i < categoryTestTableCount; i++) {
+		bool isUpper = isUpperCaseCharacter_TinyUTF8(categoryTestTable[i].cp);
+		bool expected = false;
+		switch (categoryTestTable[i].category) {
+			case Lu_CodePointCategory_TinyUTF8: expected = true; break;
+			default: break;
+		}
+		testAssertMsg(isUpper == expected,
+			"0x%X: %d != %d",
+			categoryTestTable[i].cp, isUpper, expected
+		);
+	}
+}
+
+
+static
+void test_isLowerCase( )
+{
+	for (size_t i = 0; i < categoryTestTableCount; i++) {
+		bool isLower = isLowerCaseCharacter_TinyUTF8(categoryTestTable[i].cp);
+		bool expected = false;
+		switch (categoryTestTable[i].category) {
+			case Ll_CodePointCategory_TinyUTF8: expected = true; break;
+			default: break;
+		}
+		testAssertMsg(isLower == expected,
+			"0x%X: %d != %d",
+			categoryTestTable[i].cp, isLower, expected
 		);
 	}
 }
@@ -82,6 +117,8 @@ int main( )
 	test_categoryMappingInvalid();
 
 	test_isCharacter();
+	test_isUpperCase();
+	test_isLowerCase();
 
 	return 0;
 }
