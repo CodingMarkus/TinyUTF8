@@ -137,7 +137,7 @@ void test_outOfRange( )
 	Error_TinyUTF8 error = No_Error_TinyUTF8;
 
 	size_t written = encode_TinyUTF8(
-		0x10FFFF + 1, buffer, 4, &error
+		CodePoint_MAX_TinyUTF8 + 1, buffer, 4, &error
 	);
 
 	testAssertMsg(written == 0 && error == CPOutOfRange_Error_TinyUTF8,
