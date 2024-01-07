@@ -177,6 +177,6 @@ then
 	eval "$arCmd"
 	echo "Created $LIBNAME"
 else
-	echo "Nothin to do."
+	echo "Nothing to do."
 fi
 echo

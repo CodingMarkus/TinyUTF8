@@ -19,7 +19,7 @@ printHelp()
 SYNTAX
 ------
 
-    ./test [options] ...
+    ./test [options] ... [test] ...
 
 OPTIONS
 -------
@@ -48,11 +48,22 @@ do
 		-clean) clean=true ;;
 		-norun) norun=true ;;
 		-debug) debug=true ;;
-		*) syntaxError "Unkown option \"$1\"" ;;
+		-*) syntaxError "Unkown option \"$1\"" ;;
+		*) break
 	esac
 	shift
 done
 
+
+testList=
+
+while [ $# -gt 0 ]
+do
+	case $1 in
+		*) testList="$testList $1"
+	esac
+	shift
+done
 
 srcDir="$projectDir/tests/code"
 
@@ -61,6 +72,23 @@ then
 	cd "$srcDir"
 	find . -type d -depth 1 | sed 's#^./##'
 	exit 0
+fi
+
+
+srcDirList=
+
+if [ -n "$testList" ]
+then
+	for test in $testList
+	do
+		if [ ! -d "$srcDir/$test" ]
+		then
+			error "Test \"$test\" not found!"
+		fi
+		srcDirList="$srcDirList \"$srcDir/$test\""
+	done
+else
+	srcDirList="\"$srcDir\""
 fi
 
 
@@ -97,7 +125,7 @@ fi
 buildArgs=
 parseCfgFile buildArgs "$cfgFile"
 srcFileList="$buildDir/sources.txt"
-find "$srcDir" -name "*.c" >"$srcFileList"
+eval "find $srcDirList -name \"*.c\" >\"$srcFileList\""
 
 echo
 echo '=== Building Tests ==='
@@ -164,6 +192,14 @@ do
 	binName=$( basename "$testDir" )
 	binFile="$binDir/$binName"
 
+	if [ -n "$testList" ]
+	then
+		case $testList in
+			"$binName "*|*" $binName "*|*" $binName") ;;
+			*) continue
+		esac
+	fi
+
 	echo "Next: $binName"
 
 	if [ -f "$binFile" ] \
@@ -205,9 +241,19 @@ echo
 
 for test in "$binDir"/*
 do
+	testName="$( basename "$test" )"
+
+	if [ -n "$testList" ]
+	then
+		case $testList in
+			"$testName "*|*" $testName "*|*" $testName") ;;
+			*) continue
+		esac
+	fi
+
 	[ -x "$test" ] || continue
 
-	echo "Next: $( basename "$test" )"
+	echo "Next: $testName"
 	"$test" && echo "Test succeeded."
 	echo
 done

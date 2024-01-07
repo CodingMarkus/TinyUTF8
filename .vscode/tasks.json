@@ -24,6 +24,16 @@
 			"type": "shell",
 			"problemMatcher": [ ]
 		},
+		{
+			"label": "test specific",
+			"command": [
+				"mkdir -p .build/test",
+				"&& cd .build/test",
+				"&& '${workspaceFolder}/test' ${input:testName}"
+			],
+			"type": "shell",
+			"problemMatcher": [ ]
+		},
 
 		// Debugging
 		{
