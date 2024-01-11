@@ -31,11 +31,11 @@ void test_encodingDecoding( )
 		if (cp == 0xFDD0) { cp = 0xFDEF; continue; }
 		if ((cp & 0xFFFF) == 0xFFFE) { cp++; continue; }
 
-		char buffer[4] = { 0 };
+		char buffer[UTF8_Bytes_MAX_TinyUTF8] = { 0 };
 		Error_TinyUTF8 error = No_Error_TinyUTF8;
 
 		const size_t written = encode_TinyUTF8(
-			cp, buffer, 4, &error
+			cp, buffer, sizeof(buffer), &error
 		);
 
 		testAssertMsg(written > 0 && !error,
@@ -45,7 +45,7 @@ void test_encodingDecoding( )
 		CodePoint_TinyUTF8 decoded = CodePoint_None_TinyUTF8;
 
 		const size_t read = decode_TinyUTF8(
-			buffer, 4, &decoded, &error
+			buffer, sizeof(buffer), &decoded, &error
 		);
 
 		testAssertMsg(read > 0 && !error,
@@ -75,7 +75,7 @@ void test_decodingEncoding( )
 	};
 
 	for (size_t i = 0; samples[i].bytes; i++) {
-		char buffer[4] = { 0 };
+		char buffer[UTF8_Bytes_MAX_TinyUTF8] = { 0 };
 		size_t length = strlen(samples[i].bytes);
 		Error_TinyUTF8 error = No_Error_TinyUTF8;
 		CodePoint_TinyUTF8 decoded = CodePoint_None_TinyUTF8;
@@ -92,7 +92,7 @@ void test_decodingEncoding( )
 		);
 
 		const size_t written = encode_TinyUTF8(
-			decoded, buffer, 4, &error
+			decoded, buffer, sizeof(buffer), &error
 		);
 
 		testAssertMsg(written > 0 && !error,
@@ -115,7 +115,7 @@ void test_invalidCP( )
 	size_t count = sizeof(cps) / sizeof(cps[0]);
 
 	for (size_t i = 0; i < count; i++) {
-		char buffer[4] = { 0 };
+		char buffer[UTF8_Bytes_MAX_TinyUTF8] = { 0 };
 		Error_TinyUTF8 error = No_Error_TinyUTF8;
 
 		const size_t written = encode_TinyUTF8(
@@ -133,11 +133,11 @@ void test_invalidCP( )
 static
 void test_outOfRange( )
 {
-	char buffer[4] = { 0 };
+	char buffer[UTF8_Bytes_MAX_TinyUTF8] = { 0 };
 	Error_TinyUTF8 error = No_Error_TinyUTF8;
 
 	size_t written = encode_TinyUTF8(
-		CodePoint_MAX_TinyUTF8 + 1, buffer, 4, &error
+		CodePoint_MAX_TinyUTF8 + 1, buffer, sizeof(buffer), &error
 	);
 
 	testAssertMsg(written == 0 && error == CPOutOfRange_Error_TinyUTF8,
@@ -145,7 +145,7 @@ void test_outOfRange( )
 	);
 
 	written = encode_TinyUTF8(
-		CodePoint_None_TinyUTF8, buffer, 4, &error
+		CodePoint_None_TinyUTF8, buffer, sizeof(buffer), &error
 	);
 
 	testAssertMsg(written == 0 && error == CPOutOfRange_Error_TinyUTF8,
@@ -163,7 +163,7 @@ void test_destTooSmall( )
 	size_t count = sizeof(cps) / sizeof(cps[0]);
 
 	for (size_t i = 0; i < count; i++) {
-		char buffer[4] = { 0 };
+		char buffer[UTF8_Bytes_MAX_TinyUTF8] = { 0 };
 		Error_TinyUTF8 error = No_Error_TinyUTF8;
 
 		const size_t written = encode_TinyUTF8(
@@ -187,7 +187,7 @@ void test_srcTooSmall( )
 	size_t count = sizeof(cps) / sizeof(cps[0]);
 
 	for (size_t i = 0; i < count; i++) {
-		char buffer[4] = { 0 };
+		char buffer[UTF8_Bytes_MAX_TinyUTF8] = { 0 };
 		Error_TinyUTF8 error = No_Error_TinyUTF8;
 
 		const size_t written = encode_TinyUTF8(
@@ -322,7 +322,7 @@ void test_unsafeEncodingDecoding( )
 		if (cp == 0xFDD0) { cp = 0xFDEF; continue; }
 		if ((cp & 0xFFFF) == 0xFFFE) { cp++; continue; }
 
-		char buffer[4] = { 0 };
+		char buffer[UTF8_Bytes_MAX_TinyUTF8] = { 0 };
 		size_t written = unsafeEncode_TinyUTF8(cp, buffer);
 		CodePoint_TinyUTF8 decoded = CodePoint_None_TinyUTF8;
 
@@ -330,16 +330,18 @@ void test_unsafeEncodingDecoding( )
 
 		testAssertMsg(read == written, "%zu != %zu", read, written);
 
-		char buffer2[4] = { 0 };
+		char buffer2[UTF8_Bytes_MAX_TinyUTF8] = { 0 };
 		Error_TinyUTF8 error = No_Error_TinyUTF8;
 
-		size_t written2 = encode_TinyUTF8(cp, buffer2, 4, &error);
+		size_t written2 = encode_TinyUTF8(cp, buffer2, sizeof(buffer2), &error);
 
 		testAssert(written == written2);
 		testAssert(0 == memcmp(buffer, buffer2, written));
 
 		CodePoint_TinyUTF8 decoded2 = CodePoint_None_TinyUTF8;
-		size_t read2 = decode_TinyUTF8(buffer, 4, &decoded2, &error);
+		size_t read2 = decode_TinyUTF8(
+			buffer, sizeof(buffer), &decoded2, &error
+		);
 
 		testAssert(read == read2);
 		testAssert(decoded == decoded2);

@@ -26,7 +26,11 @@ bool getStringCounts_TinyUTF8(
 	const char * ptr = string;
 
 	for (;;) {
-		while (minBytesLeft < 4 && ptr[minBytesLeft] != 0) minBytesLeft++;
+		while (minBytesLeft < UTF8_Bytes_MAX_TinyUTF8
+			&& ptr[minBytesLeft] != 0)
+		{
+				minBytesLeft++;
+		}
 		if (minBytesLeft == 0) break;
 
 		CodePoint_TinyUTF8 cp = InvalidCodedCP_Error_TinyUTF8;
@@ -66,7 +70,11 @@ void unsafeGetStringCounts_TinyUTF8(
 	const char * ptr = string;
 
 	for (;;) {
-		while (minBytesLeft < 4 && ptr[minBytesLeft] != 0) minBytesLeft++;
+		while (minBytesLeft < UTF8_Bytes_MAX_TinyUTF8
+			&& ptr[minBytesLeft] != 0)
+		{
+			minBytesLeft++;
+		}
 		if (minBytesLeft == 0) break;
 
 		CodePoint_TinyUTF8 cp = InvalidCodedCP_Error_TinyUTF8;
