@@ -1,6 +1,6 @@
 #pragma once
 
-#include "internal/types.h"
+#include "internal/const.h"
 
 /**
 	Marking a pointer optional allows it to be NULL. By default all pointers
